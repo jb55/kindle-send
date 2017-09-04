@@ -14,6 +14,16 @@ Tools
   - kindle-email: low level emailer
 
 
+Usage
+-----
+
+    $ kindle-send file.txt
+    $ kindle-send file.pdf
+    $ kindle-send < README.md
+    $ AUTHOR="Bob" TITLE="Some Title" kindle-send article.md
+    $ curl -sL "https://news.com/article" | kindle-send
+
+
 Configuration
 -------------
 
@@ -35,14 +45,6 @@ Configuration
   NOTE: `KINDLE_FROM_EMAIL` has to be an email from a "reputable" source, such as
         gmail. Amazon may ignore the email otherwise.
 
-Usage
------
-
-    $ kindle-send file.txt
-    $ kindle-send file.pdf
-    $ kindle-send < README.md
-    $ AUTHOR="Bob" TITLE="Some Title" kindle-send article.md
-    $ curl -sL "https://news.com/article" | kindle-send
 
 
 Install
