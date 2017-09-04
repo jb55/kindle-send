@@ -1,4 +1,4 @@
-kindle-tools
+kindle-send
 ============
 
   Some bash scripts for sending stuff to your kindle. It uses pandoc and calibre
