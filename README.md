@@ -2,7 +2,7 @@ kindle-send
 ============
 
   Some bash scripts for sending stuff to your kindle. It uses pandoc and calibre
-  to prepare documents for your kindle.
+  to properly format the documents.
 
 
 Tools
