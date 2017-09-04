@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+KINDLE_SENDMAIL=${KINDLE_SENDMAIL:-sendmail}
+KINDLE_SENDMAIL_OPTIONS=${KINDLE_SENDMAIL_OPTIONS:-""}
+
+set -e
+
+get_mimetype(){
+    file --mime-type "$1" | sed 's/.*: //'
+}
+
+usage () {
+    printf "kindle-email <file.pdf> [filename.pdf]\n" 1>&2
+    exit 1
+}
+
+[ -z "$1" ] && usage
+
+file="$1"
+filename="$2"
+from="$KINDLE_FROM_EMAIL"
+to="$KINDLE_EMAIL"
+subject="kindle-send"
+body="hi"
+boundary="=-=-=-=-=-="
+name="${filename:-$(basename "$file")}"
+
+
+
+# Build headers
+{
+
+cat <<EOF
+From: $from
+To: $to
+Subject: $subject
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="$boundary"
+
+--${boundary}
+Content-Type: text/plain; charset="UTF-8"
+
+$body
+
+EOF
+
+mimetype=$(get_mimetype "$file")
+
+cat <<EOF
+--${boundary}
+Content-Type: ${mimetype}; charset="UTF-8"; name="$name"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="$name"
+
+EOF
+
+base64 "$file"
+
+printf '%s\n' "--${boundary}--"
+
+} | "$KINDLE_SENDMAIL" "$KINDLE_SENDMAIL_OPTIONS" -oi -t
+

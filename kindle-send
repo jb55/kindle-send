@@ -1,0 +1,75 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p calibre pandoc
+
+
+set -e
+
+is_type () {
+    if file "$1" | grep -q "$2"; then
+       echo "1";
+    else
+       echo "0";
+    fi
+}
+
+
+usage () {
+    printf "usage: %s [title.txt]\n" "$(basename "$0")"
+    exit 1
+}
+
+gather_metadata () {
+    while [ -z "$TITLE" ]; do
+        read -p "title: " -r TITLE </dev/tty
+    done
+    if [ -z "$AUTHOR" ]; then
+        read -p "author (Unknown): " -r AUTHOR </dev/tty
+
+        AUTHOR=${AUTHOR:-"Unknown"}
+    fi
+}
+
+FILE="$(mktemp)"
+
+if [ -z "$1" ]; then
+    cat > "$FILE"
+else
+    cp "$1" "$FILE"
+    EXT="${1##*.}"
+fi
+
+IS_EPUB=$(is_type "$FILE" "EPUB")
+IS_PDF=$(is_type "$FILE" "PDF")
+
+if [ $IS_EPUB -eq 1 ]; then
+    ln -s "$FILE" "$FILE.epub"
+    ebook-convert "$FILE.epub" "$FILE.mobi"
+    SEND="$FILE.mobi"
+    SENDF="$FILE.mobi"
+elif [ $IS_PDF -eq 1 ]; then
+    SEND="$FILE"
+    gather_metadata
+
+    SENDF="$AUTHOR - $TITLE.pdf"
+else
+    if [ -z "$EXT" ]; then
+        read -p "extension (txt): " -r EXT </dev/tty
+        EXT=${EXT:-txt}
+    fi
+
+    gather_metadata
+
+    ln -s "$FILE" "$FILE.$EXT"
+
+    pandoc -M author="$AUTHOR" \
+           -M title="$TITLE" \
+           "$FILE.$EXT" -o "$FILE.epub"
+
+    ebook-convert "$FILE.epub" "$FILE.mobi" &> /dev/null
+    SEND="$FILE.mobi"
+    SENDF="$FILE.mobi"
+fi
+
+kindle-email "$SEND" "$SENDF"
+
+rm -f "$FILE" "$FILE.epub" "$FILE.mobi" "$FILE.$EXT"
