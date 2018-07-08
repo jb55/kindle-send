@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+KINDLE_SENDMAIL=${KINDLE_SENDMAIL:-sendmail}
+KINDLE_SENDMAIL_OPTIONS=${KINDLE_SENDMAIL_OPTIONS:-"-oi -t"}
+
+usage () {
+    printf "kindle-email-text <file.txt>\n" 1>&2
+    exit 1
+}
+
+gather_metadata () {
+    while [ -z "$TITLE" ]; do
+        read -p "title: " -r TITLE </dev/tty
+    done
+    if [ -z "$AUTHOR" ]; then
+        read -p "author (Unknown): " -r AUTHOR </dev/tty
+
+        AUTHOR=${AUTHOR:-"Unknown"}
+    fi
+}
+
+gather_metadata
+
+file="$1"
+from="Kindle Doc <jb55+kindle@jb55.com>"
+to="William Casarin <jb55+kindle@jb55.com>"
+subject="$AUTHOR - $TITLE"
+
+{
+
+cat <<EOF
+From: $from
+To: $to
+Subject: $subject
+EOF
+
+cat "$file"
+
+} | "$KINDLE_SENDMAIL" "$KINDLE_SENDMAIL_OPTIONS"

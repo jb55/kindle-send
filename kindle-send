@@ -21,15 +21,17 @@ usage () {
 gather_metadata () {
     while [ -z "$TITLE" ]; do
         read -p "title: " -r TITLE </dev/tty
+        export TITLE
     done
     if [ -z "$AUTHOR" ]; then
         read -p "author (Unknown): " -r AUTHOR </dev/tty
 
-        AUTHOR=${AUTHOR:-"Unknown"}
+        export AUTHOR=${AUTHOR:-"Unknown"}
     fi
 }
 
 FILE="$(mktemp)"
+TXTFILE="$(mktemp)"
 
 if [ -z "$1" ]; then
     cat > "$FILE"
@@ -86,5 +88,6 @@ else
 fi
 
 kindle-email "$SEND" "$SENDF"
+pandoc $fromarg "$FILE.$EXT" -t plain | kindle-email-txt /dev/stdin
 
 rm -f "$FILE" "$FILE.epub" "$FILE.mobi" "$FILE.$EXT"
