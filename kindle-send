@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p calibre pandoc
+
 
 set -e
 
@@ -59,9 +61,24 @@ else
 
     ln -s "$FILE" "$FILE.$EXT"
 
+    from="$EXT"
+    if [ $from == "md" ]; then
+        from="markdown"
+    elif [ $from == "txt" ]; then
+        unset from
+    fi
+
+    if [ -z ${from+x} ]; then
+      fromarg=""
+    else
+      fromarg="-f $from"
+    fi
+
     pandoc -M author="$AUTHOR" \
            -M title="$TITLE" \
-           "$FILE.$EXT" -o "$FILE.epub"
+           $fromarg \
+           "$FILE.$EXT" \
+           -o "$FILE.epub"
 
     ebook-convert "$FILE.epub" "$FILE.mobi" &> /dev/null
     SEND="$FILE.mobi"
