@@ -86,6 +86,7 @@ else
 fi
 
 kindle-email "$SEND" "$SENDF"
-pandoc $fromarg "$FILE.$EXT" -t plain | kindle-email-txt /dev/stdin
+pandoc $fromarg "$FILE.$EXT" -t plain > "$TXTFILE"
+kindle-email-txt "$TXTFILE"
 
-rm -f "$FILE" "$FILE.epub" "$FILE.mobi" "$FILE.$EXT"
+rm -f "$FILE" "$FILE.epub" "$FILE.mobi" "$FILE.$EXT" "$TXTFILE"
