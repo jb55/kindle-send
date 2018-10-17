@@ -32,6 +32,7 @@ cat <<EOF
 From: $from
 To: $to
 Subject: $subject
+
 EOF
 
 cat "$file"
