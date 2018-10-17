@@ -11,7 +11,7 @@ let buildInputs = [ pandoc calibre ];
 in
 stdenv.mkDerivation rec {
   name = "kindle-send-${version}";
-  version = "0.1.2";
+  version = "0.1.3";
 
   src = ./.;
 
