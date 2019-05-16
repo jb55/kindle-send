@@ -2,6 +2,7 @@
 
 KINDLE_SENDMAIL=${KINDLE_SENDMAIL:-sendmail}
 KINDLE_SENDMAIL_OPTIONS=${KINDLE_SENDMAIL_OPTIONS:-"-oi -t"}
+KINDLE_TXT_EMAIL=${KINDLE_TXT_EMAIL:-$KINDLE_FROM_EMAIL}
 
 usage () {
     printf "kindle-email-text <file.txt>\n" 1>&2
@@ -22,8 +23,8 @@ gather_metadata () {
 gather_metadata
 
 file="$1"
-from="Kindle Doc <jb55+kindle@jb55.com>"
-to="William Casarin <jb55+kindle@jb55.com>"
+from="Kindle Doc <$KINDLE_TXT_EMAIL>"
+to="$KINDLE_TXT_EMAIL"
 subject="$AUTHOR - $TITLE"
 
 {
@@ -37,4 +38,4 @@ EOF
 
 cat "$file"
 
-} | "$KINDLE_SENDMAIL" "$KINDLE_SENDMAIL_OPTIONS"
+} | $KINDLE_SENDMAIL $KINDLE_SENDMAIL_OPTIONS

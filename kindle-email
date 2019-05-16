@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 KINDLE_SENDMAIL=${KINDLE_SENDMAIL:-sendmail}
-KINDLE_SENDMAIL_OPTIONS=${KINDLE_SENDMAIL_OPTIONS:-""}
+KINDLE_SENDMAIL_OPTIONS=${KINDLE_SENDMAIL_OPTIONS:-"-oi -t"}
 
 set -e
 
@@ -58,5 +58,5 @@ base64 "$file"
 
 printf '%s\n' "--${boundary}--"
 
-} | "$KINDLE_SENDMAIL" "$KINDLE_SENDMAIL_OPTIONS" -oi -t
+} | $KINDLE_SENDMAIL $KINDLE_SENDMAIL_OPTIONS
 
